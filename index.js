@@ -35,11 +35,33 @@
   },{threshold:.08});
   document.querySelectorAll('.fi').forEach(function(el){obs.observe(el);});
 
-  // Contact shortcut
-  document.querySelector('.bsend').addEventListener('click',function(){
+  // Contact form
+  document.querySelector('.bsend').addEventListener('click',async function(event){
+    event.preventDefault();
+    var button=event.currentTarget;
     var fields=document.querySelectorAll('.cform input, .cform textarea');
-    var subject=encodeURIComponent('Contato pelo portfólio');
-    var body=encodeURIComponent('Nome: '+fields[0].value+'\nE-mail: '+fields[1].value+'\n\n'+fields[2].value);
-    window.location.href='mailto:billafrancapessoal@gmail.com?subject='+subject+'&body='+body;
+    var name=fields[0].value.trim();
+    var email=fields[1].value.trim();
+    var message=fields[2].value.trim();
+    var originalLabel=button.innerHTML;
+
+    if(!name || !email || !message){
+      button.innerHTML='<span>Preencha todos os campos</span>';
+      setTimeout(function(){button.innerHTML=originalLabel;},2500);
+      return;
+    }
+
+    button.disabled=true;
+    button.innerHTML='<span>Enviando...</span>';
+    try{
+      var response=await fetch('/api/contact',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:name,email:email,message:message})});
+      if(!response.ok) throw new Error('Falha ao enviar');
+      button.innerHTML='<span>Mensagem enviada</span>';
+      fields.forEach(function(field){field.value='';});
+    }catch(error){
+      button.innerHTML='<span>Não foi possível enviar</span>';
+    }finally{
+      setTimeout(function(){button.disabled=false;button.innerHTML=originalLabel;},3000);
+    }
   });
 })();
