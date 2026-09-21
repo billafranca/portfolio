@@ -34,4 +34,12 @@
     entries.forEach(function(e,i){if(e.isIntersecting)setTimeout(function(){e.target.classList.add('v');},i*70);});
   },{threshold:.08});
   document.querySelectorAll('.fi').forEach(function(el){obs.observe(el);});
+
+  // Contact shortcut
+  document.querySelector('.bsend').addEventListener('click',function(){
+    var fields=document.querySelectorAll('.cform input, .cform textarea');
+    var subject=encodeURIComponent('Contato pelo portfólio');
+    var body=encodeURIComponent('Nome: '+fields[0].value+'\nE-mail: '+fields[1].value+'\n\n'+fields[2].value);
+    window.location.href='mailto:billafrancapessoal@gmail.com?subject='+subject+'&body='+body;
+  });
 })();
